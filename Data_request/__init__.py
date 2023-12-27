@@ -1,0 +1,2 @@
+from Data_request import download_candles
+from Data_request import request_quotes
