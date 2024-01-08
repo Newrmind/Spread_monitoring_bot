@@ -23,6 +23,22 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
 
         if (row.pair not in df_open_positions['spread'].tolist() or df_open_positions.empty) and row.pair not in blacklist['spread'].tolist():
 
+            def get_stat_spread(spread):
+                df = db.get_table_from_db(f"""
+                            SELECT spread,
+                            COUNT(CASE WHEN close_reason = 'sl' THEN 1 END) AS sl_count,
+                            COUNT(CASE WHEN close_reason = 'tp' THEN 1 END) AS tp_count,
+                            (COUNT(CASE WHEN close_reason = 'tp' THEN 1 END) * 100.0 / COUNT(*)) AS tp_percentage
+                            FROM closed_positions
+                            WHERE spread = '{spread}'
+                            GROUP BY spread;""")
+
+                sl_count = df['sl_count'][0]
+                tp_count = df['tp_count'][0]
+                tp_percentage = df['tp_percentage'][0]
+                return round(sl_count, 2), round(tp_count, 2), round(tp_percentage, 2)
+
+
             if spread_price <= row.lb:
                 """signal = 'Buy' """
 
@@ -31,13 +47,15 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
                 tp = row.sma200
                 volume_for_trade = Config.volume_for_trade
                 time_now, timestamp_now = time_functions.time_now()
+                sl_count, tp_count, tp_percentage = get_stat_spread(row.pair)
 
                 new_position = {'open_time': time_now, 'open_timestamp': timestamp_now, 'spread': row.pair,
                                 'direction': direction, 'open_prise': spread_price, 'sl': stop_loss,
                                 'tp': tp, 'volume_rub': volume_for_trade, 'result_perc': 0, 'result_rub': 0,
                                 'close_time': None, 'close_reason': None}
 
-                message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}'
+                message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}\n' \
+                          f'Кол-во стопов: {sl_count}. Кол-во тейков: {tp_count}. Процент тейков: {tp_percentage}%.'
                 print(f"[INFO] {message}.")
 
                 df_for_plot = bollinger_bands[bollinger_bands['pair'] == row.pair]
@@ -57,13 +75,15 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
                 tp = row.sma200
                 volume_for_trade = Config.volume_for_trade
                 time_now, timestamp_now = time_functions.time_now()
+                sl_count, tp_count, tp_percentage = get_stat_spread(row.pair)
 
                 new_position = {'open_time': time_now, 'open_timestamp': timestamp_now, 'spread': row.pair,
                                 'direction': direction, 'open_prise': spread_price, 'sl': stop_loss,
                                 'tp': tp, 'volume_rub': volume_for_trade, 'result_perc': 0, 'result_rub': 0,
                                 'close_time': None, 'close_reason': None}
 
-                message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}'
+                message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}\n' \
+                          f'Кол-во стопов: {sl_count}. Кол-во тейков: {tp_count}. Процент тейков: {tp_percentage}%.'
                 print(f"[INFO] {message}.")
 
                 df_for_plot = bollinger_bands[bollinger_bands['pair'] == row.pair]
