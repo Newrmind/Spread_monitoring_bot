@@ -66,9 +66,9 @@ class Trading:
             pairs_list = last_bollinger_bands['pair'].tolist()
             pairs_list_uniq = [item for pair in pairs_list for item in pair.split('/')]
             symbols_list_uniq = list(set(pairs_list_uniq))
-            last_prices = get_quotes(symbols_list_uniq)
+            last_prices, ful_prices = get_quotes(symbols_list_uniq)
         else:
-            last_prices = {}
+            last_prices, ful_prices = {}, {}
 
         if not df_open_positions.empty:
             """Проверка открытых позиций."""
@@ -94,7 +94,7 @@ class Trading:
 
         # найти сделки
         if find_ideas_allowed and trading_allowed_value and not need_analyze:
-            create_trade.create_trade(self.db, last_prices, bollinger_bands, last_bollinger_bands, df_open_positions)
+            create_trade.create_trade(self.db, last_prices, ful_prices, bollinger_bands, last_bollinger_bands, df_open_positions)
 
         elif not find_ideas_allowed or not trading_allowed_value:
             print(f'\n[INFO] Параметр find_ideas_allowed = {find_ideas_allowed}. '

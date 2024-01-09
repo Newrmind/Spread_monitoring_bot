@@ -5,7 +5,7 @@ from Trade_logic import draw_сhart
 from Config import Config
 
 
-def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_bands: pd.DataFrame, df_open_positions):
+def create_trade(db, last_prices, ful_prices, bollinger_bands: pd.DataFrame, last_bollinger_bands: pd.DataFrame, df_open_positions):
     """Ищет точки входа"""
 
     tg_send = TelegramSendMessage()
@@ -15,6 +15,9 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
         last_price_symbol_1 = last_prices[symbol_1]
         last_price_symbol_2 = last_prices[symbol_2]
         spread_price = last_price_symbol_1 / last_price_symbol_2
+
+        lot_count_1 = int(Config.volume_for_trade / ful_prices[symbol_1])
+        lot_count_2 = int(Config.volume_for_trade / ful_prices[symbol_2])
 
         if not df_open_positions.columns.tolist():
             df_open_positions = pd.DataFrame(columns=['open_time', 'open_timestamp', 'spread', 'direction', 'open_prise',
@@ -55,6 +58,7 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
                                 'close_time': None, 'close_reason': None}
 
                 message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}\n' \
+                          f'Объём по {symbol_1}: {lot_count_1} лотов, объём по {symbol_2}: {lot_count_2} лотов.\n' \
                           f'Кол-во стопов: {sl_count}. Кол-во тейков: {tp_count}. Процент тейков: {tp_percentage}%.'
                 print(f"[INFO] {message}.")
 
@@ -83,6 +87,7 @@ def create_trade(db, last_prices, bollinger_bands: pd.DataFrame, last_bollinger_
                                 'close_time': None, 'close_reason': None}
 
                 message = f'Открыта позиция {row.pair} {direction} по цене {round(spread_price, 4)}\n' \
+                          f'Объём по {symbol_1}: {lot_count_1} лотов, объём по {symbol_2}: {lot_count_2} лотов.\n' \
                           f'Кол-во стопов: {sl_count}. Кол-во тейков: {tp_count}. Процент тейков: {tp_percentage}%.'
                 print(f"[INFO] {message}.")
 

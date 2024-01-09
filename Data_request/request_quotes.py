@@ -6,6 +6,7 @@ def get_quotes(symbols_list_uniq: list):
 
     exchange = 'MOEX'
     last_trades = {}
+    ful_prices = {}
     print(f'Запрос цен для тикеров: {symbols_list_uniq}')
 
     retries = 10  # Максимальное количество попыток
@@ -14,6 +15,7 @@ def get_quotes(symbols_list_uniq: list):
             for symbol in symbols_list_uniq:
                 quotes = apProvider.GetQuotes(f'{exchange}:{symbol}')[0]
                 last_trades[symbol] = quotes['last_price']
+                ful_prices[symbol] = round((quotes['last_price'] * quotes['lotsize']), 4)
 
             break  # Выход из цикла при успешном запросе
 
@@ -24,7 +26,13 @@ def get_quotes(symbols_list_uniq: list):
     else:
         print(f"Не удалось получить данные для {symbols_list_uniq} после нескольких попыток")
 
-    return last_trades
+    return last_trades, ful_prices
+
+
+if __name__ == '__main__':
+    last_trades, ful_prices = get_quotes(['SBER', 'GAZP'])
+    print(last_trades, ful_prices)
+    print(f'Лотов сбер = {1000000 / ful_prices["SBER"]}, лотов газ = {1000000 / ful_prices["GAZP"]}')
 
 
 
