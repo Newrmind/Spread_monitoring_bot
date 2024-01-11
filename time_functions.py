@@ -137,7 +137,7 @@ def has_passed_any_hours(timestamp: int, hours: float) -> bool:
     """
 
     moscow_tz = pytz.timezone('Europe/Moscow')
-
+    timestamp = int(timestamp)
     # Преобразование заданного времени в объект datetime
     timestamp_dt = datetime.datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.UTC)
     timestamp_moscow = timestamp_dt.astimezone(moscow_tz)

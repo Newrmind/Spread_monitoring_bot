@@ -7,7 +7,8 @@ import time_functions
 from Data_request import download_candles
 from Trade_logic import data_analysis, trading
 from Database.postgres_sql import Database
-from Telegram_bot.aiogram_main import start_bot
+from Telegram_bot.aiogram_main import start_bot, tg_main
+from Telegram_bot.send_message import TelegramSendMessage
 
 
 def check_time_analyze(db, data_analyze):
@@ -58,6 +59,9 @@ if __name__ == '__main__':
     data_analyze = data_analysis.DataAnalysis()
     trading = trading.Trading()
 
+    tg_send = TelegramSendMessage()
+    tg_admin_id = int(db.get_table_from_db("SELECT value FROM params WHERE param = 'tg_admin_id'")['value'].iloc[0])
+
     # Загрузка и подготовка данных
     thr_check_time_analyze = threading.Thread(target=check_time_analyze, args=(db, data_analyze,))
     thr_check_time_analyze.start()
@@ -67,7 +71,7 @@ if __name__ == '__main__':
     thr_main.start()
 
     # tg_bot
-    thr_tg_bot = threading.Thread(target=start_bot())
+    thr_tg_bot = threading.Thread(target=start_bot)
     thr_tg_bot.start()
 
     # Список потоков
@@ -84,10 +88,9 @@ if __name__ == '__main__':
         # Проверка состояния потоков и обработка ошибок
         for thread in threads:
             if not thread.is_alive():
-                print(f'Поток {thread.name} завершился с ошибкой или был прерван.')
-
-                # Выход с ошибкой (например, код 1)
-                sys.exit(1)
+                message = f'Поток {thread.name} завершился с ошибкой или был прерван.'
+                print(message)
+                tg_send.send_text_message(message, tg_admin_id)
 
         time.sleep(15)
         print()
