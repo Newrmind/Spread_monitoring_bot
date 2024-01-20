@@ -1,9 +1,12 @@
 from connection import apProvider
 import time
+from logger import log_function_info, error_inf
 
 
 def get_quotes(symbols_list_uniq: list):
+    """Запрашивает цены последних сделок."""
 
+    log_function_info("Старт функции get_quotes()")
     exchange = 'MOEX'
     last_trades = {}
     ful_prices = {}
@@ -20,7 +23,8 @@ def get_quotes(symbols_list_uniq: list):
             break  # Выход из цикла при успешном запросе
 
         except Exception as ex:
-            print(ex)
+            print(f"Произошла ошибка: {ex}")
+            error_inf(ex)
             time.sleep(10)
             retries -= 1  # Уменьшение количества попыток
     else:

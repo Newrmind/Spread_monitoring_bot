@@ -9,6 +9,7 @@ from Trade_logic import data_analysis, trading
 from Database.postgres_sql import Database
 from Telegram_bot.aiogram_main import start_bot, tg_main
 from Telegram_bot.send_message import TelegramSendMessage
+from logger import clear_log_file, log_function_info
 
 
 def check_time_analyze(db, data_analyze):
@@ -28,12 +29,16 @@ def check_time_analyze(db, data_analyze):
               f'Need_analize = {need_analyze}\n')
 
         if need_analyze and not is_weekend_or_night:
-            print('[INFO] Запуск функции обновления свечных данных.')
+            info_message = '[INFO] Запуск функции обновления свечных данных.'
+            log_function_info('Запуск функции обновления свечных данных.')
+            print(info_message)
 
             download_candles.stocks_candles_data()
             data_analyze.concat()
             data_analyze.calculate_spreads()
             data_analyze.bollinger_bands()
+
+            clear_log_file()  # Очистить файл логов
 
         time.sleep(30)
 
