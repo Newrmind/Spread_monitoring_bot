@@ -69,7 +69,6 @@ def round_time(interval: str) -> int:
     """Округление текущего времени в меньшую сторону для каждого таймфрейма"""
     timestamp = time.time()
     rounded_timestamp = timestamp
-    print(rounded_timestamp)
 
     if interval == '5m':
         interval_5min = 5 * 60  # 5 minutes in seconds
@@ -201,6 +200,26 @@ def is_weekend_or_night_msk_timezone():
         return True
 
     return False
+
+def is_moscow_evening():
+    """Определяет, вечерняя ли сейчас сессия на Московской бирже."""
+
+    # Определение текущего времени в Московском времени
+    moscow_timezone = datetime.timezone(datetime.timedelta(hours=3))  # Смещение Московского времени
+    moscow_now = datetime.datetime.now(moscow_timezone)
+
+    # Определение начала и конца интервала (19:00 - 00:00)
+    start_time = datetime.datetime.strptime("19:00:00", "%H:%M:%S").time()
+    end_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S").time()
+
+    # Преобразование текущего времени в time для сравнения
+    current_time = moscow_now.time()
+
+    # Проверка, находится ли текущее время в интервале
+    if start_time <= current_time or current_time <= end_time:
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':

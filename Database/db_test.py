@@ -8,10 +8,9 @@ import matplotlib.pyplot as plt
 
 
 
-from logger import log_function_info, error_inf, init_logging
+from logger import log_function_info, error_inf
 import time
 
-init_logging()
 
 def test():
     log_function_info("Старт функции test()")

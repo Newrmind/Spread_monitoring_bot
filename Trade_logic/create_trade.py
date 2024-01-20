@@ -1,7 +1,7 @@
 import pandas as pd
 import time_functions
 from Telegram_bot.send_message import TelegramSendMessage
-from Trade_logic import draw_сhart
+from Trade_logic import draw_сhart, secondary_functions
 from Config import Config
 from logger import log_function_info, error_inf
 import time
@@ -17,6 +17,7 @@ def create_trade(db, last_prices, ful_prices, bollinger_bands: pd.DataFrame, las
 
             tg_send = TelegramSendMessage()
             blacklist = db.get_table_from_db('SELECT * FROM blacklist')
+
             for index, row in last_bollinger_bands.iterrows():
                 symbol_1, symbol_2 = row.pair.split('/')
                 last_price_symbol_1 = last_prices[symbol_1]
@@ -26,12 +27,19 @@ def create_trade(db, last_prices, ful_prices, bollinger_bands: pd.DataFrame, las
                 lot_count_1 = int(Config.volume_for_trade / ful_prices[symbol_1])
                 lot_count_2 = int(Config.volume_for_trade / ful_prices[symbol_2])
 
+                spreads = db.get_table_from_db(f"SELECT * FROM stock_spreads WHERE pair = '{row.pair}'")
+                ticker_1_evening = spreads["ticker_1_evening"].iloc[0]
+                ticker_2_evening = spreads["ticker_2_evening"].iloc[0]
+                moscow_evening = time_functions.is_moscow_evening()
+                evening_trade = secondary_functions.check_evening_trade(moscow_evening, ticker_1_evening, ticker_2_evening)
+
                 if not df_open_positions.columns.tolist():
                     df_open_positions = pd.DataFrame(columns=['open_time', 'open_timestamp', 'spread', 'direction', 'open_prise',
                                                               'sl', 'tp', 'volume_rub', 'result_perc', 'result_rub',  'close_time',
                                                               'close_reason'])
 
-                if (row.pair not in df_open_positions['spread'].tolist() or df_open_positions.empty) and row.pair not in blacklist['spread'].tolist():
+                if (row.pair not in df_open_positions['spread'].tolist() or df_open_positions.empty) and row.pair not in blacklist['spread'].tolist()\
+                        and evening_trade:
 
                     def get_stat_spread(spread):
                         df = db.get_table_from_db(f"""
@@ -109,6 +117,12 @@ def create_trade(db, last_prices, ful_prices, bollinger_bands: pd.DataFrame, las
                         df_open_positions = pd.concat([df_open_positions, pd.DataFrame.from_records([new_position])])
                         df_open_positions = df_open_positions.reset_index(drop=True)
                         db.add_table_to_db(df_open_positions, 'open_positions', 'replace')
+
+                elif not evening_trade:
+                    log_message = f'Сделка по инструменту {row.pair} не совершена, т.к. один из инструментов не торгуется на вечерней сессии.'
+                    log_function_info(log_message)
+                    print('[INFO]' + log_message)
+
             break
 
         except Exception as ex:

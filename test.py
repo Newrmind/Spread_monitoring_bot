@@ -1,20 +1,24 @@
-from Database.postgres_sql import Database
-from logger import log_function_info, error_inf
-import time
+import datetime
+from Database import postgres_sql
+import time_functions
+from Trade_logic import secondary_functions
 
 
-def test():
-    log_function_info("Старт функции test()")
-    retries = 5
+db = postgres_sql.Database()
+spread = "RTKM/RTKMP"
+# spread = "POSI/OZON"
+spreads = db.get_table_from_db(f"SELECT * FROM stock_spreads WHERE pair = '{spread}'")
+ticker_1_evening = spreads["ticker_1_evening"].iloc[0]
+ticker_2_evening = spreads["ticker_2_evening"].iloc[0]
+# moscow_evening = time_functions.is_moscow_evening()
+moscow_evening = False
+print(f"ticker_1_evening = {ticker_1_evening}, ticker_2_evening = {ticker_2_evening}, moscow_evening = {moscow_evening}")
 
-    while retries > 0:
-        try:
-            x = 1/0
-            return x
-        except Exception as ex:
-            print(f"Произошла ошибка: {ex}")
-            error_inf(ex)
-            time.sleep(1)
-            retries -= 1  # Уменьшение количества попыток
+evening_trade = secondary_functions.check_evening_trade(moscow_evening, ticker_1_evening, ticker_2_evening)
 
-print(test())
+if evening_trade:
+    print("Сделка совершена!")
+else:
+    print("Сделка невозможна!")
+
+print(ticker_1_evening and ticker_2_evening)

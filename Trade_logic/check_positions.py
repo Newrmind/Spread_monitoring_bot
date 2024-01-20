@@ -1,6 +1,6 @@
 import pandas as pd
 import time_functions
-from Trade_logic import draw_сhart
+from Trade_logic import draw_сhart, secondary_functions
 from Config import Config
 from Telegram_bot.send_message import TelegramSendMessage
 from logger import log_function_info, error_inf
@@ -48,7 +48,13 @@ def check_positions(db, last_prices, df_open_positions, df_closed_positions, bol
                 spread_price = last_price_symbol_1 / last_price_symbol_2
                 spread = row.spread
 
-                if spread in df_open_positions['spread'].tolist():
+                spreads = db.get_table_from_db(f"SELECT * FROM stock_spreads WHERE pair = '{spread}'")
+                ticker_1_evening = spreads["ticker_1_evening"].iloc[0]
+                ticker_2_evening = spreads["ticker_2_evening"].iloc[0]
+                moscow_evening = time_functions.is_moscow_evening()
+                evening_trade = secondary_functions.check_evening_trade(moscow_evening, ticker_1_evening, ticker_2_evening)
+
+                if spread in df_open_positions['spread'].tolist() and evening_trade:
 
                     # Получить индекс строки, где 'spread' == 'text'
                     index_to_update = df_open_positions[df_open_positions['spread'] == spread].index[0]
@@ -192,6 +198,11 @@ def check_positions(db, last_prices, df_open_positions, df_closed_positions, bol
 
                             # Записать PnL
                             change_pnl(time=current_time, timestamp=current_timestamp, pnl=current_result_rub)
+
+                elif not evening_trade:
+                    log_message = f'Позиция по спреду {row.pair} не закрыта, т.к. один из инструментов не торгуется на вечерней сессии.'
+                    log_function_info(log_message)
+                    print('[INFO]' + log_message)
 
                 df_open_positions = df_open_positions.reset_index(drop=True)
                 df_closed_positions = df_closed_positions.reset_index(drop=True)
