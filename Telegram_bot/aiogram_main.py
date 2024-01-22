@@ -180,12 +180,5 @@ async def tg_main() -> None:
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
-def start_bot():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    async def run_tg_main():
-        await tg_main()
-
-    asyncio.run_coroutine_threadsafe(run_tg_main(), loop=loop)
-    loop.run_forever()
+# def start_bot():
+#     asyncio.run(tg_main())

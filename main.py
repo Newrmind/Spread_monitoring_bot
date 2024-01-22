@@ -1,16 +1,20 @@
 import time
 import threading
 import sys
+import asyncio
 
 from Config import Config  # Файл конфигурации
 import time_functions
 from Data_request import download_candles
 from Trade_logic import data_analysis, trading
 from Database.postgres_sql import Database
-from Telegram_bot.aiogram_main import start_bot, tg_main
+from Telegram_bot.aiogram_main import tg_main
 from Telegram_bot.send_message import TelegramSendMessage
 from logger import clear_log_file, log_function_info
 
+
+def start_bot():
+    asyncio.run(tg_main())
 
 def check_time_analyze(db, data_analyze):
     """Проверяет время последнего анализа данных"""
