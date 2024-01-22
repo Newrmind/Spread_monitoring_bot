@@ -33,7 +33,6 @@ def plot(spread: str, df: pd.DataFrame, lats_price: float = None):
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
-
     return buf
 
 def plot_pnl(df):
@@ -74,15 +73,15 @@ def draw_table(df):
 
 if __name__ == '__main__':
     db = Database()
-    pair = 'TATN/TATNP'
-    lats_price = 0.9
-    # df_spread = db.get_table_from_db(f"SELECT * FROM bollinger_bands WHERE pair = '{pair}'")
-    df_stock = db.get_table_from_db(f"SELECT time_msk, close, open, high, low FROM stocks_klines_15m WHERE symbol = 'SBER' LIMIT 20")
-    df_open_pos = db.get_table_from_db(f"SELECT * FROM open_positions")
+    pair = 'YNDX/VKCO'
+    lats_price = 4.1
+    df_spread = db.get_table_from_db(f"SELECT * FROM bollinger_bands WHERE pair = '{pair}'")
+    # df_stock = db.get_table_from_db(f"SELECT time_msk, close, open, high, low FROM stocks_klines_15m WHERE symbol = 'SBER' LIMIT 20")
+    # df_open_pos = db.get_table_from_db(f"SELECT * FROM open_positions")
     # df_spread.info()
     # plot_candles(df_stock)
-    # plot(pair, df_spread, lats_price)
-    draw_table(df_open_pos)
+    plot(pair, df_spread, lats_price)
+    # draw_table(df_open_pos)
 
     # df_pnl = db.get_table_from_db("SELECT * FROM pnl ORDER BY timestamp ASC LIMIT 1000")
     # plot_pnl(df_pnl)
