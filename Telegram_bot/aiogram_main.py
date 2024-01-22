@@ -183,4 +183,5 @@ async def tg_main() -> None:
 def start_bot():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(tg_main())
+    loop.create_task(tg_main())
+    loop.run_forever()
