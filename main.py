@@ -80,7 +80,7 @@ if __name__ == '__main__':
     thr_main.start()
 
     # tg_bot
-    thr_tg_bot = threading.Thread(target=start_bot)
+    thr_tg_bot = threading.Thread(target=start_bot())
     thr_tg_bot.start()
 
     # Список потоков

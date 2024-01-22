@@ -180,5 +180,5 @@ async def tg_main() -> None:
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
-# def start_bot():
-#     asyncio.run(tg_main())
+def start_bot():
+    asyncio.run(tg_main())
