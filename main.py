@@ -13,9 +13,6 @@ from Telegram_bot.send_message import TelegramSendMessage
 from logger import clear_log_file, log_function_info
 
 
-def start_bot():
-    asyncio.run(tg_main())
-
 def check_time_analyze(db, data_analyze):
     """Проверяет время последнего анализа данных"""
 
