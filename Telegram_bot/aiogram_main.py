@@ -181,4 +181,5 @@ async def tg_main() -> None:
     await dp.start_polling(bot)
 
 def start_bot():
+    """Запуск бота"""
     asyncio.run(tg_main())
