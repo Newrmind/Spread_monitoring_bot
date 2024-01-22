@@ -183,5 +183,9 @@ async def tg_main() -> None:
 def start_bot():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.create_task(tg_main())
+
+    async def run_tg_main():
+        await tg_main()
+
+    asyncio.run_coroutine_threadsafe(run_tg_main(), loop=loop)
     loop.run_forever()
