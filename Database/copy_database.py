@@ -48,8 +48,8 @@ def copy_from_server(table_names: list):
 
 
 if __name__ == '__main__':
-    copy_all_tables(copy_from='server')
-    # copy_all_tables(copy_from='local')
+    # copy_all_tables(copy_from='server')
+    copy_all_tables(copy_from='local')
     # table_names = ['stock_spreads', 'blacklist', 'open_positions']
     # copy_from_server(table_names)
     # copy_to_server('stock_spreads')

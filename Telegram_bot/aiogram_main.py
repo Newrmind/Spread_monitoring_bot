@@ -181,4 +181,6 @@ async def tg_main() -> None:
     await dp.start_polling(bot)
 
 def start_bot():
-    asyncio.run(tg_main())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(tg_main())
