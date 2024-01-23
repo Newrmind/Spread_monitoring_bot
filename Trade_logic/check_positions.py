@@ -200,7 +200,7 @@ def check_positions(db, last_prices, df_open_positions, df_closed_positions, bol
                             change_pnl(time=current_time, timestamp=current_timestamp, pnl=current_result_rub)
 
                 elif not evening_trade:
-                    log_message = f'Позиция по спреду {row.pair} не закрыта, т.к. один из инструментов не торгуется на вечерней сессии.'
+                    log_message = f'Позиция по спреду {spread} не закрыта, т.к. один из инструментов не торгуется на вечерней сессии.'
                     log_function_info(log_message)
                     print('[INFO]' + log_message)
 
