@@ -184,6 +184,7 @@ async def tg_main() -> None:
 def start_bot():
     try:
         """Запуск бота"""
+        print("Запуск телеграмм бота.")
         asyncio.run(tg_main())
     except Exception as ex:
         print(f"В функции start_bot произошла ошибка: {ex}")

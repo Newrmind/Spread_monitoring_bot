@@ -76,15 +76,15 @@ if __name__ == '__main__':
     tg_admin_id = int(db.get_table_from_db("SELECT value FROM params WHERE param = 'tg_admin_id'")['value'].iloc[0])
 
     # Загрузка и подготовка данных
-    thr_check_time_analyze = threading.Thread(target=check_time_analyze, args=(db, data_analyze,), daemon=True)
+    thr_check_time_analyze = threading.Thread(target=check_time_analyze, name='Check_time_analyze', args=(db, data_analyze,), daemon=True)
     thr_check_time_analyze.start()
 
     # Трейдинг
-    thr_trade = threading.Thread(target=main, name='CustomThread', args=(trading,), daemon=True)
+    thr_trade = threading.Thread(target=main, name='Trading_functions', args=(trading,), daemon=True)
     thr_trade.start()
 
     # tg_bot
-    thr_tg_bot = threading.Thread(target=start_bot(), daemon=True)
+    thr_tg_bot = threading.Thread(target=start_bot(), name='Telegram_bot', daemon=True)
     thr_tg_bot.start()
 
     # Список потоков
