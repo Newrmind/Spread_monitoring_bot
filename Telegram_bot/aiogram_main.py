@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import sys
 from Telegram_bot import help_commands
 import pandas as pd
 from Telegram_bot import send_message
@@ -181,5 +182,9 @@ async def tg_main() -> None:
     await dp.start_polling(bot)
 
 def start_bot():
-    """Запуск бота"""
-    asyncio.run(tg_main())
+    try:
+        """Запуск бота"""
+        asyncio.run(tg_main())
+    except Exception as ex:
+        print(f"В функции start_bot произошла ошибка: {ex}")
+        sys.exit(1)
