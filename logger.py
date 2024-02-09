@@ -51,7 +51,7 @@ def clear_log_file():
 
             message = "Log file was cleared!"
             logger.info(message)
-            tg_send_log.send_text_message(message, chat_id=tg_admin_id)
+            # tg_send_log.send_text_message(message, chat_id=tg_admin_id)
 
     except Exception as e:
         logger.error(f"Error clearing log file: {e}")

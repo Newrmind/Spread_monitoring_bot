@@ -80,7 +80,7 @@ class DataAnalysis:
 
             # Заполняем пропуски предыдущими значениями
             columns_to_fill = result_df.columns.tolist()
-            result_df[columns_to_fill] = result_df[columns_to_fill].bfill()
+            result_df[columns_to_fill] = result_df[columns_to_fill].ffill()
 
             # Записываем результат в БД
             self.db.add_table_to_db(df=result_df, table_name=f'concat_stocks_{timeframe}', if_exists='replace')
