@@ -1,3 +1,6 @@
+# Автор cia76 (https://github.com/cia76)
+# Ссылка на код: https://github.com/cia76/AlorPy
+
 from datetime import datetime
 from time import time_ns  # Текущее время в наносекундах, прошедших с 01.01.1970 UTC
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
